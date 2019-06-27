@@ -24,7 +24,6 @@ namespace RestaurantManager
         private void fReport_Load(object sender, EventArgs e)
         {
             // TODO: This line of code loads data into the 'QL_NhaHangDataSet.USP_GetListBillByEnglish' table. You can move, or remove it, as needed.
-            this.USP_GetListBillByEnglishTableAdapter.Fill(this.QL_NhaHangDataSet.USP_GetListBillByEnglish,FromDate,ToDate);
             // TODO: This line of code loads data into the 'QL_NhaHangDataSet2.USP_getFoodList' table. You can move, or remove it, as needed.
             //this.USP_ndc07TableAdapter.Fill(this.QL_NhaHangDataSet4.USP_ndc07,FromDate,ToDate);
 

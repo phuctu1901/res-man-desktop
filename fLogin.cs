@@ -1,4 +1,4 @@
-﻿using RestaurantManager.Models;
+﻿using RestaurantManager.DTO;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -45,7 +45,7 @@ namespace RestaurantManager
             request.AddJsonBody(obj);
             var respone = client.Execute<Token>(request);
            
-
+           
             if (respone.StatusCode.Equals(System.Net.HttpStatusCode.OK))
             {
                 var token = respone.Data.access_token;

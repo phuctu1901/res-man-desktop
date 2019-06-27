@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using RestSharp;
-using RestaurantManager.Models;
 
 namespace RestaurantManager.Caller
 {

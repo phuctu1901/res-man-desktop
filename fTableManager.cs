@@ -1,5 +1,4 @@
 ﻿using RestaurantManager.Caller;
-using RestaurantManager.Models;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -12,19 +11,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using RestaurantManager.DAO;
+using RestaurantManager.DTO;
+using Menu = RestaurantManager.DTO.Menu;
 
 namespace RestaurantManager
 {
+
     public partial class fTableManager : MetroFramework.Forms.MetroForm
     {
-        string UserName;
         string DisplayName;
-        string PassWord;
-        int Type;
+       
         public fTableManager(string displayName)
         {
             DisplayName = displayName;
-            Type = 1;
             InitializeComponent();
             loadListTable();
             loadCategory();
@@ -34,18 +34,18 @@ namespace RestaurantManager
         #region method
         public string getTableStatusByID(int id)
         {
-            var tablestatuscaller = new RestSharpCaller<RestaurantManager.Models.TableStatus>("http://localhost:8000/api");
-            List<RestaurantManager.Models.TableStatus> tablestatus = tablestatuscaller.Get("tablestatus");
+            var tablestatuscaller = new RestSharpCaller<TableStatus>("http://localhost:8000/api");
+            List<TableStatus> tablestatus = tablestatuscaller.Get("tablestatus");
             string result = tablestatus.Find(item => item.id == id).title;
             return result;
         }
         public void loadListTable()
         {
+            TableDAO tableDAO = new TableDAO();
+            var tables = (List<Table>) tableDAO.LoadListTable();
+          
             flowLayoutPanel1.Controls.Clear();
-            var tablecaller = new RestSharpCaller<RestaurantManager.Models.Table>("http://localhost:8000/api");
-            var tables = tablecaller.Get("table");
-            List<RestaurantManager.Models.Table> listTable = tables;
-            foreach (RestaurantManager.Models.Table item in listTable)
+            foreach (Table item in tables)
             {
                 Button button = new Button();
                 int id = item.tablestatus_id;
@@ -72,17 +72,17 @@ namespace RestaurantManager
                 flowLayoutPanel1.Controls.Add(button);
 
             }
-            cbListTable.DataSource = listTable;
+            cbListTable.DataSource = tables;
             cbListTable.DisplayMember = "title";
         }
         public void loadTable(int idTable)
         {
-            var tablecaller = new RestSharpCaller<RestaurantManager.Models.Table>("http://localhost:8000/api");
-            RestaurantManager.Models.Table table = tablecaller.GetSingle("table/" + idTable);
+            TableDAO tableDAO = new TableDAO();
+            Table table = (Table) tableDAO.LoadTable(idTable);
 
             foreach (Control item in flowLayoutPanel1.Controls)
             {
-                if ((item.Tag as RestaurantManager.Models.Table).id == table.id)
+                if ((item.Tag as Table).id == table.id)
                 {
 
                     item.Text = table.title + "\n" + getTableStatusByID(table.tablestatus_id);
@@ -104,13 +104,15 @@ namespace RestaurantManager
 
         public void loadMenuByIdTable(int idTable)
         {
+
             CultureInfo culture = new CultureInfo("vi-VN");
 
-            var menucaller = new RestSharpCaller<RestaurantManager.Models.Menu>("http://localhost:8000/api");
-            List<RestaurantManager.Models.Menu> menu = menucaller.Get("loadMenuByTableId/" + idTable);
+            MenuDAO menuDAO = new MenuDAO();
+
+            List<Menu> menu =(List<Menu>) menuDAO.LoadMenuByIDTable(idTable);
 
             listViewMenu.Items.Clear();
-            foreach (RestaurantManager.Models.Menu item in menu)
+            foreach (Menu item in menu)
             {
                 ListViewItem lsvItem = new ListViewItem(item.title);
                 lsvItem.SubItems.Add(item.count.ToString());
@@ -123,9 +125,12 @@ namespace RestaurantManager
         public void loadFinalTotalPrice(int idTable)
         {
             float finalTotalPrice = 0;
-            var menucaller = new RestSharpCaller<RestaurantManager.Models.Menu>("http://localhost:8000/api");
-            List<RestaurantManager.Models.Menu> menu = menucaller.Get("loadMenuByTableId/" + idTable);
-            foreach (RestaurantManager.Models.Menu item in menu)
+
+            MenuDAO menuDAO = new MenuDAO();
+
+            List<Menu> menu = (List<Menu>)menuDAO.LoadMenuByIDTable(idTable);
+
+            foreach (Menu item in menu)
             {
                 finalTotalPrice += item.total_price;
             }
@@ -135,17 +140,18 @@ namespace RestaurantManager
         }
         public void loadCategory()
         {
-            var foodcategorycaller = new RestSharpCaller<RestaurantManager.Models.FoodCategory>("http://localhost:8000/api");
-            var foodcategories = foodcategorycaller.Get("foodcategory");
-            cbCategory.DataSource = foodcategories;
+            CategoryDAO categoryDAO = new CategoryDAO();
+            List<FoodCategory> foodCategories = (List<FoodCategory>) categoryDAO.LoadListFoodCategory();
+            cbCategory.DataSource = foodCategories;
             cbCategory.ValueMember = "id";
             cbCategory.DisplayMember = "title";
         }
 
         public void loadFoodListbyCategory(int id)
         {
-            var foodcaller = new RestSharpCaller<RestaurantManager.Models.Food>("http://localhost:8000/api");
-            var foods = foodcaller.Get("food/" + id);
+
+            FoodDAO foodDAO = new FoodDAO();
+            List<Food> foods = (List<Food>)foodDAO.LoadFoodByCategoryID(id);
             cbFood.DataSource = foods;
             cbFood.ValueMember = "id";
             cbFood.DisplayMember = "title";
@@ -166,7 +172,7 @@ namespace RestaurantManager
 
                 }
             }
-            RestaurantManager.Models.Table table = btn.Tag as RestaurantManager.Models.Table;
+            Table table = btn.Tag as Table;
             listViewMenu.Tag = btn.Tag;
             loadMenuByIdTable(table.id);
             loadFinalTotalPrice(table.id);
@@ -178,24 +184,6 @@ namespace RestaurantManager
             this.Close();
         }
 
-        private void adminToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Type != 0)
-            {
-                this.Hide();
-                fAdmin f = new fAdmin(Type);
-                f.ShowDialog();
-                this.Show();
-                loadCategory();
-
-                if (listViewMenu.Tag as Table != null)
-                {
-                    int idTable = (listViewMenu.Tag as Table).id;
-                    loadListTable();
-                    loadMenuByIdTable(idTable);
-                }
-            }
-        }
 
         //private void thôngTinCáNhânToolStripMenuItem_Click(object sender, EventArgs e)
         //{
@@ -221,13 +209,13 @@ namespace RestaurantManager
         {
 
 
-            if (listViewMenu.Tag as RestaurantManager.Models.Table == null)
+            if (listViewMenu.Tag as Table == null)
             {
                 MessageBox.Show("Vui lòng chọn bàn!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (cbFood.SelectedValue == null) return;
-            int idTable = (listViewMenu.Tag as RestaurantManager.Models.Table).id;
+            int idTable = (listViewMenu.Tag as Table).id;
 
 
             var client = new RestClient("http://localhost:8000/api");
@@ -277,7 +265,7 @@ namespace RestaurantManager
 
         private void btnPay_Click(object sender, EventArgs e)
         {
-            RestaurantManager.Models.Table table = listViewMenu.Tag as RestaurantManager.Models.Table;
+            Table table = listViewMenu.Tag as Table;
             var client = new RestClient("http://localhost:8000/api");
             var request = new RestRequest("getBillUnPaid/" + table.id, Method.GET);
             request.OnBeforeDeserialization = resp => { resp.ContentType = "application/json"; };
@@ -366,7 +354,7 @@ namespace RestaurantManager
 
         private void trợGiúpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start("https://www.facebook.com/ndc07.it");
+            System.Diagnostics.Process.Start("https://www.facebook.com/tuan.bui.297");
         }
 
         private void listViewMenu_SelectedIndexChanged(object sender, EventArgs e)

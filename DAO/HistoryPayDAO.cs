@@ -1,6 +1,8 @@
-﻿using RestaurantManager.DTO;
+﻿using RestaurantManager.Caller;
+using RestaurantManager.DTO;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -8,22 +10,30 @@ using System.Threading.Tasks;
 
 namespace RestaurantManager.DAO
 {
+    class HistoryPayRequest
+    {
+        public String date { set; get; }
+        public HistoryPayRequest(String date)
+        {
+            this.date = date;
+        }
+    }
+
     public class HistoryPayDAO
     {
         private static HistoryPayDAO instance;
-        public List<HistoryPay> loadListPay(DateTime date)
+        String base_url = ConfigurationManager.AppSettings["base_url"];
+        private static RestSharpCaller<HistoryPayRequest> history_pay_caller;
+
+        public HistoryPayDAO()
         {
-            DataTable data = DataProvider.Instance.ExecuteQuery("EXECUTE dbo.USP_ListPay @dateCheckOut", new object[] { date});
-            List<HistoryPay> listPay = new List<HistoryPay>();
-            foreach (DataRow item in data.Rows)
-            {
-                HistoryPay pay = new HistoryPay(item);
-                listPay.Add(pay);
-            }
-            return listPay;
+            history_pay_caller = new RestSharpCaller<HistoryPayRequest>(base_url);
         }
-        public static HistoryPayDAO Instance { get { if (instance == null) instance = new HistoryPayDAO();return instance; }
-            private set => instance = value; }
-        private HistoryPayDAO() { }
+
+        public void LoadHistoryPay(String date)
+        {
+            HistoryPayRequest historyPayRequest = new HistoryPayRequest(date);
+            history_pay_caller.Create("loadpayhistory", historyPayRequest);
+        }
     }
 }

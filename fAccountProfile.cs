@@ -46,19 +46,19 @@ namespace RestaurantManager
             { 
                 if (txbNewPass.Text == "" && txbReNewPass.Text == "")
                 {
-                    if (AccountDAO.Instance.changeAccountOnlyDisplayName(txbUserName.Text, txbDisplayName.Text))
-                    {
-                        MessageBox.Show("Cập nhập tài khoản thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.Close();
-                    }
+                    //if (AccountDAO.Instance.changeAccountOnlyDisplayName(txbUserName.Text, txbDisplayName.Text))
+                    //{
+                    //    MessageBox.Show("Cập nhập tài khoản thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //    this.Close();
+                    //}
                 }
                 else
                 {
 
                     if (txbNewPass.Text == txbReNewPass.Text)
                     {
-                        if (AccountDAO.Instance.changeAccount(txbUserName.Text, txbDisplayName.Text, txbNewPass.Text))
-                            MessageBox.Show("Cập nhập tài khoản thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        //if (AccountDAO.Instance.changeAccount(txbUserName.Text, txbDisplayName.Text, txbNewPass.Text))
+                        //    MessageBox.Show("Cập nhập tài khoản thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.Close();
                     }
                     else MessageBox.Show("Vui lòng nhập lại mật khẩu mới!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
