@@ -1,5 +1,6 @@
 ﻿using RestaurantManager.Caller;
 using RestaurantManager.DTO;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -30,10 +31,14 @@ namespace RestaurantManager.DAO
             history_pay_caller = new RestSharpCaller<HistoryPayRequest>(base_url);
         }
 
-        public void LoadHistoryPay(String date)
+        public IRestResponse LoadHistoryPay(String date)
         {
+            var client = new RestClient(base_url);
+            var request = new RestRequest("loadpayhistory", Method.POST);
             HistoryPayRequest historyPayRequest = new HistoryPayRequest(date);
-            history_pay_caller.Create("loadpayhistory", historyPayRequest);
+            request.AddJsonBody(historyPayRequest);
+            var response = client.Execute(request);
+            return response;
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RestaurantManager.DTO
 {
-    class HistoryPay
+    public class HistoryPay
     {
         public string title { set; get; }
         public DateTime checkin { set; get; }

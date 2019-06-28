@@ -32,18 +32,19 @@ namespace RestaurantManager
             CultureInfo culture = new CultureInfo("vi-VN");
 
             HistoryPayDAO historyPayDAO = new HistoryPayDAO();
-            historyPayDAO.LoadHistoryPay(date.Year + "-" + date.Month + "-" + date.Day);
+            var response = historyPayDAO.LoadHistoryPay(date.Year + "-" + date.Month + "-" + date.Day);
 
-            var client = new RestClient("http://localhost:8000/api");
-            var loadPayHistoryRequest = new RestRequest("loadpayhistory", Method.POST);
-            loadPayHistoryRequest.AddParameter("date", date.Year +"-"+date.Month+"-"+date.Day);
+            //var client = new RestClient("http://localhost:8000/api");
+            //var loadPayHistoryRequest = new RestRequest("loadpayhistory", Method.POST);
+            //loadPayHistoryRequest.AddParameter("date", date.Year +"-"+date.Month+"-"+date.Day);
 
 
-            var response = client.Execute<List<HistoryPay>>(loadPayHistoryRequest);
+            //var response = client.Execute<List<HistoryPay>>(loadPayHistoryRequest);
+            List<HistoryPay> pays = Newtonsoft.Json.JsonConvert.DeserializeObject<List<HistoryPay>>(response.Content);
+
+           
             
-            var pay = response.Data;
-
-            foreach (HistoryPay item in pay)
+            foreach (HistoryPay item in pays)
             {
                 ListViewItem lsvItem = new ListViewItem(item.title);
                 lsvItem.SubItems.Add(item.checkin.ToString());

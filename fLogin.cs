@@ -1,4 +1,5 @@
-﻿using RestaurantManager.DTO;
+﻿using RestaurantManager.DAO;
+using RestaurantManager.DTO;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -35,28 +36,17 @@ namespace RestaurantManager
        
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            var client = new RestClient("http://localhost:8000/api");
-
-            //client.AddDefaultHeader("Authorization", string.Format("Bearer {0}", bearerToken));
-
-
-            var request = new RestRequest("auth/login ", Method.POST);
-            Login obj = new Login(txbUser.Text, txbPassWord.Text, true);
-            request.AddJsonBody(obj);
-            var respone = client.Execute<Token>(request);
-           
-           
+            AccountDAO accountDAO = new AccountDAO();
+            var respone = accountDAO.Login(txbUser.Text, txbPassWord.Text);
             if (respone.StatusCode.Equals(System.Net.HttpStatusCode.OK))
             {
                 var token = respone.Data.access_token;
                 Program.access_token = token;
-                var getUserRequest = new RestRequest("auth/user ", Method.GET);
-                client.AddDefaultHeader("Authorization", string.Format("Bearer {0}", Program.access_token));
-                var respone1 = client.Execute<User>(getUserRequest);
-                if (respone1.Data.isAdmin)
+                var getdetail_respone = accountDAO.GetDetail();
+                if (getdetail_respone.Data.isAdmin)
                 {
                     this.Hide();
-                   fTableManager f = new fTableManager(respone1.Data.name);
+                   fTableManager f = new fTableManager(getdetail_respone.Data.name);
                     f.ShowDialog();
                     txbPassWord.Clear();
                     txbUser.Clear();

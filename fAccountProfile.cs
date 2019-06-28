@@ -38,32 +38,32 @@ namespace RestaurantManager
        
         private void btnUpdateAccount_Click(object sender, EventArgs e)
         {
-            if (AccountDAO.Instance.login(txbUserName.Text,txbPassWord.Text)==false)
-            {
-                MessageBox.Show("Mật khẩu không chính xác, vui lòng nhập lại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            { 
-                if (txbNewPass.Text == "" && txbReNewPass.Text == "")
-                {
-                    //if (AccountDAO.Instance.changeAccountOnlyDisplayName(txbUserName.Text, txbDisplayName.Text))
-                    //{
-                    //    MessageBox.Show("Cập nhập tài khoản thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    //    this.Close();
-                    //}
-                }
-                else
-                {
+            //if (AccountDAO.Instance.login(txbUserName.Text,txbPassWord.Text)==false)
+            //{
+            //    MessageBox.Show("Mật khẩu không chính xác, vui lòng nhập lại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
+            //else
+            //{ 
+            //    if (txbNewPass.Text == "" && txbReNewPass.Text == "")
+            //    {
+            //        //if (AccountDAO.Instance.changeAccountOnlyDisplayName(txbUserName.Text, txbDisplayName.Text))
+            //        //{
+            //        //    MessageBox.Show("Cập nhập tài khoản thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //        //    this.Close();
+            //        //}
+            //    }
+            //    else
+            //    {
 
-                    if (txbNewPass.Text == txbReNewPass.Text)
-                    {
-                        //if (AccountDAO.Instance.changeAccount(txbUserName.Text, txbDisplayName.Text, txbNewPass.Text))
-                        //    MessageBox.Show("Cập nhập tài khoản thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.Close();
-                    }
-                    else MessageBox.Show("Vui lòng nhập lại mật khẩu mới!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
+            //        if (txbNewPass.Text == txbReNewPass.Text)
+            //        {
+            //            //if (AccountDAO.Instance.changeAccount(txbUserName.Text, txbDisplayName.Text, txbNewPass.Text))
+            //            //    MessageBox.Show("Cập nhập tài khoản thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //            this.Close();
+            //        }
+            //        else MessageBox.Show("Vui lòng nhập lại mật khẩu mới!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    }
+            //}
         }
 
         

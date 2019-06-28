@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RestaurantManager.DTO
 {
-    class Menu
+    public class Menu
     {
         public string title { get; set; }
         public float food_price { get; set; }

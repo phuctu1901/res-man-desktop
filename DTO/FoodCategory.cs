@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RestaurantManager.DTO
 {
-    class FoodCategory
+    public class FoodCategory
     {
         public int id { get; set; }
         public string title { get; set; }

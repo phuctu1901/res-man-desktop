@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RestaurantManager.DTO
 {
-    class Token
+    public class Token
     {
         public string access_token { set; get; }
         public string token_type { set; get; }

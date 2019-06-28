@@ -13,7 +13,7 @@ namespace RestaurantManager.Caller
             client.AddDefaultHeader("Authorization", string.Format("Bearer {0}", Program.access_token));
 
         }
-
+        //Gọi phương thức này để lấy về một danh sách các đối tượng được deserialize từ json 
         public List<T> Get(string path)
         {
             var request = new RestRequest(path, Method.GET);
@@ -21,34 +21,15 @@ namespace RestaurantManager.Caller
             return response.Data;
         }
 
+      
        
-
+        //Gọi phương thức này để lấy về một đối tượng đã được deserialize từ json
         public T GetSingle(string path)
         {
             var request = new RestRequest(path, Method.GET);
             var respone = client.Execute(request);
             T result = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(respone.Content);
             return result;
-        }
-
-        public void Create(string path, T obj)
-        {
-            var request = new RestRequest(path, Method.POST);
-            request.AddJsonBody(obj);
-            client.Execute(request);
-        }
-
-        public void Update(string path, int id, T obj)
-        {
-            var request = new RestRequest(path + '/' + id, Method.PUT);
-            request.AddJsonBody(obj);
-            client.Execute(request);
-        }
-
-        public void Delete(string path, int id)
-        {
-            var request = new RestRequest(path + '/' + id, Method.DELETE);
-            client.Execute(request);
         }
     }
 }

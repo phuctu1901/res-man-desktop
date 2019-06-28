@@ -75,6 +75,7 @@ namespace RestaurantManager
             cbListTable.DataSource = tables;
             cbListTable.DisplayMember = "title";
         }
+
         public void loadTable(int idTable)
         {
             TableDAO tableDAO = new TableDAO();
@@ -266,13 +267,12 @@ namespace RestaurantManager
         private void btnPay_Click(object sender, EventArgs e)
         {
             Table table = listViewMenu.Tag as Table;
-            var client = new RestClient("http://localhost:8000/api");
-            var request = new RestRequest("getBillUnPaid/" + table.id, Method.GET);
-            request.OnBeforeDeserialization = resp => { resp.ContentType = "application/json"; };
-            var queryResult = client.Execute(request);
+
+            BillDAO billDAO = new BillDAO();
+            var response = billDAO.GetUnPaidBill(table.id);
 
 
-            string idCurrentBill = queryResult.Content;
+            String idCurrentBill = response.Content;
 
            
             if (idCurrentBill != "0")
@@ -280,17 +280,7 @@ namespace RestaurantManager
                 
                 if (MessageBox.Show("Bạn có chắc thanh toán cho " + table.title + " không?", "Thanh toán", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
                 {
-                    var addDiscountRequest = new RestRequest("discount", Method.POST);
-                    addDiscountRequest.AddParameter("bill_id", idCurrentBill);
-                    addDiscountRequest.AddParameter("discount", (float)numericUpDownDiscount.Value);
-                    addDiscountRequest.OnBeforeDeserialization = resp => { resp.ContentType = "application/json"; };
-                    var queryResult1 = client.Execute(addDiscountRequest);
-
-
-                    var checkOutRequest = new RestRequest("checkout", Method.POST);
-                    checkOutRequest.AddParameter("bill_id", idCurrentBill);
-                    addDiscountRequest.OnBeforeDeserialization = resp => { resp.ContentType = "application/json"; };
-                    var checkOutQueryResult = client.Execute(checkOutRequest);
+                    billDAO.CheckOut(idCurrentBill, (float)numericUpDownDiscount.Value);
                     if (numericUpDownDiscount.Value != 0)
                     {
                         double totalPrice = Convert.ToDouble(txbTotalPrice.Text.Split(',')[0]) * 1000;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RestaurantManager.DTO
 {
-    class User
+   public class User
     {
         public int id { set; get; }
         public string name { set; get; }

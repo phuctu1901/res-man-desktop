@@ -1,6 +1,9 @@
-﻿using RestaurantManager.DTO;
+﻿using RestaurantManager.Caller;
+using RestaurantManager.DTO;
+using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Security.Cryptography;
@@ -11,92 +14,33 @@ namespace RestaurantManager.DAO
 {
     public class AccountDAO
     {
+        String base_url = ConfigurationManager.AppSettings["base_url"];
         private static AccountDAO instance;
+        private static RestSharpCaller<User> user_caller;
 
-        public static AccountDAO Instance { get { if (instance == null) instance = new AccountDAO(); return instance; }
-            private set => instance = value; }
-        private AccountDAO() { }
-        public bool login(string userName, string passWord)
+        public IRestResponse<Token> Login(String username, String password)
         {
-           
-            return false;
-        }
-        //public Account getAccount(string userName, string passWord)
-        //{
-        //    MD5 md5 = MD5.Create();
-        //    byte[] temp = Encoding.ASCII.GetBytes(passWord);
-        //    byte[] hashData = md5.ComputeHash(temp);
-        //    string hashPass = "";
-        //    foreach (byte item in temp)
-        //    {
-        //        hashPass += item;
-        //    }
+            var client = new RestClient("http://localhost:8000/api");
 
-        //    DataTable data = DataProvider.Instance.ExecuteQuery("EXECUTE dbo.USP_GetAccount @userName , @passWord", new object[] { userName, "abc" });
-        //    Account account = new Account(data.Rows[0]);
-        //    return account;
-        //}
-        //public bool changeAccountOnlyDisplayName(string userName, string displayName)
-        //{
-        //    return DataProvider.Instance.ExecuteNoneQuery("EXEC dbo.USP_ChangeAccountOnlyDislayName @userName , @displayName", new object[] { userName, displayName }) > 0;
-        //}
-        //public bool changeAccount(string userName, string displayName, string passWord)
-        //{
-        //    MD5 md = MD5.Create();
-        //    byte[] temp = Encoding.ASCII.GetBytes(passWord);
-        //    byte[] hashData = md.ComputeHash(temp);
-        //    string hashPass = "";
-        //    foreach (byte item in hashData)
-        //    {
-        //        hashPass += item;
-        //    }
-        //    return DataProvider.Instance.ExecuteNoneQuery("EXECUTE dbo.USP_ChangeAccount @userName , @displayName , @newPassWord", new object[] { userName, displayName, hashPass }) > 0;
-        //}
-        //public Account getDisplayNameByUserName(string userName)
-        //{
-        //    DataTable data = DataProvider.Instance.ExecuteQuery("EXECUTE dbo.USP_GetDisplayNameByUserName @userName", new object[] { userName });
-        //    Account acc = new Account(data.Rows[0]);
-        //    return acc;
-        //}
-        //public DataTable loadListAccForAdmin()
-        //{
-        //    return DataProvider.Instance.ExecuteQuery("SELECT UserName[Tên đăng nhập],DisplayName[Tên hiển thị],Type[Loại tài khoản] FROM dbo.Account where  type=0");
-        //}
-        //public DataTable loadListAccForRoot()
-        //{
-        //    return DataProvider.Instance.ExecuteQuery("SELECT UserName[Tên đăng nhập],DisplayName[Tên hiển thị],Type[Loại tài khoản] FROM dbo.Account where type in(0,1)");
-        //}
-        //public bool insertAcc(string user, string display, string pass, int type)
-        //{
-        //    MD5 md = MD5.Create();
-        //    byte[] temp = Encoding.ASCII.GetBytes(pass);
-        //    byte[] hashData = md.ComputeHash(temp);
-        //    string hashPass = "";
-        //    foreach (byte item in hashData)
-        //    {
-        //        hashPass += item;
-        //    }
-        //    string query = "EXEC dbo.USP_InsertAcc @user , @display , @pass , @type";
-        //    int data = DataProvider.Instance.ExecuteNoneQuery(query, new object[] { user, display, hashPass, type });
-        //    return data > 0;
-        //}
-        //public bool updateAcc(string user, string display, int type)
-        //{
-        //    string query = "EXECUTE dbo.USP_UpdateAcc @display , @type , @user";
-        //    int data = DataProvider.Instance.ExecuteNoneQuery(query, new object[] { display, type, user });
-        //    return data > 0;
-        //}
-        //public bool deleteAcc(string user)
-        //{
-        //    string query = "EXECUTE dbo.USP_DeleteAcc @user";
-        //    int data = DataProvider.Instance.ExecuteNoneQuery(query, new object[] { user });
-        //    return data > 0;
-        //}
-        //public int checkUserName(string user)
-        //{
-        //    string query = "EXEC dbo.USP_CheckUserName @user";
-        //    DataTable data = DataProvider.Instance.ExecuteQuery(query, new object[] { user });
-        //    return data.Rows.Count;
-        //}
+            //client.AddDefaultHeader("Authorization", string.Format("Bearer {0}", bearerToken));
+
+
+            var request = new RestRequest("auth/login ", Method.POST);
+            Login obj = new Login(username, password, true);
+            request.AddJsonBody(obj);
+            IRestResponse<Token> respone = client.Execute<Token>(request);
+            return respone;
+        }
+
+
+        public IRestResponse<User> GetDetail()
+        {
+            var client = new RestClient("http://localhost:8000/api");
+            var getUserRequest = new RestRequest("auth/user ", Method.GET);
+            client.AddDefaultHeader("Authorization", string.Format("Bearer {0}", Program.access_token));
+            var respone1 = client.Execute<User>(getUserRequest);
+            return respone1;
+        }
+
     }
 }
